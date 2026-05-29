@@ -98,12 +98,18 @@
     
     /* MODAL */
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 3000; display: none; align-items: center; justify-content: center; }
-    .modal-content { background: #1a1a24; max-width: 500px; width: 90%; padding: 28px; border-radius: 32px; border: 1px solid #3a3a44; color: white; }
+    .modal-content { background: #1a1a24; max-width: 500px; width: 90%; padding: 28px; border-radius: 32px; border: 1px solid #3a3a44; color: white; max-height: 90vh; overflow-y: auto; }
     .modal-content h3 { margin-bottom: 20px; }
     .modal-content input, .modal-content textarea { width: 100%; padding: 12px; margin: 10px 0; background: #2a2a32; border: 1px solid #3a3a44; border-radius: 14px; color: white; }
     .modal-content button { background: #c5a87c; border: none; padding: 12px; border-radius: 40px; font-weight: 600; width: 100%; margin-top: 12px; cursor: pointer; color: #0a0a0f; }
     .close-modal { float: right; font-size: 1.5rem; cursor: pointer; }
     .checkbox-label { display: flex; align-items: center; gap: 10px; margin: 10px 0; cursor: pointer; }
+    .image-preview { width: 100px; height: 100px; object-fit: cover; border-radius: 12px; margin-top: 10px; border: 1px solid #3a3a44; }
+    .upload-area { border: 2px dashed #3a3a44; border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; margin: 10px 0; transition: 0.2s; }
+    .upload-area:hover { border-color: #c5a87c; background: rgba(197,168,124,0.1); }
+    .upload-area i { font-size: 2rem; color: #888; margin-bottom: 8px; }
+    .upload-area p { color: #888; font-size: 0.8rem; }
+    #imageFileInput { display: none; }
     
     /* LOGIN OVERLAY */
     .login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(12px); z-index: 2000; display: none; align-items: center; justify-content: center; }
@@ -207,14 +213,22 @@
   </div>
 </div>
 
-<!-- MODAL TAMBAH/EDIT PRODUK -->
+<!-- MODAL TAMBAH/EDIT PRODUK (DENGAN UPLOAD GAMBAR) -->
 <div id="productModal" class="modal">
   <div class="modal-content">
     <span class="close-modal" id="closeModalBtn">&times;</span>
     <h3 id="modalTitle">Tambah Produk</h3>
     <input type="text" id="productName" placeholder="Nama Produk">
     <input type="text" id="productPrice" placeholder="Harga (Rp 189k)">
-    <input type="text" id="productImage" placeholder="URL Gambar">
+    
+    <!-- Upload Gambar -->
+    <div class="upload-area" id="uploadArea">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <p>Klik untuk upload gambar produk</p>
+      <input type="file" id="imageFileInput" accept="image/*">
+    </div>
+    <img id="imagePreview" class="image-preview" style="display: none;">
+    
     <input type="text" id="productLink" placeholder="Link Redirect (WA/Shopee)">
     <textarea id="productDesc" rows="2" placeholder="Deskripsi"></textarea>
     <input type="text" id="productSize" placeholder="Ukuran (S/M/L/XL)">
@@ -222,6 +236,7 @@
     <label class="checkbox-label"><input type="checkbox" id="productBestseller"> <span>⭐ Best Seller</span></label>
     <button id="saveProductBtn">Simpan</button>
     <input type="hidden" id="editProductId">
+    <input type="hidden" id="currentImageData">
   </div>
 </div>
 
@@ -231,6 +246,7 @@
     let products = [];
     let stats = { totalClicks: 0, totalOrders: 0 };
     let isDashboardMode = false;
+    let tempImageData = "";
     
     const testimonials = [
       { name: "Rachel ✨", text: "Asli nyaman banget! Udah beli 2 kali, gak nyesel.", stars: 5 },
@@ -238,7 +254,9 @@
       { name: "Nadia A.", text: "Aesthetic vibes banget! Bahannya adem.", stars: 5 }
     ];
 
-    // Load data dari localStorage
+    // Default gambar (base64 1x1 pixel transparent, biar gak error)
+    const DEFAULT_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ddd'/%3E%3Ctext x='50' y='50' text-anchor='middle' dy='.3em' fill='%23999' font-size='10'%3ENo Image%3C/text%3E%3C/svg%3E";
+
     function loadData() {
       const stored = localStorage.getItem("russfinds_products");
       if (stored && JSON.parse(stored).length > 0) {
@@ -307,7 +325,7 @@
         const badgeHtml = product.bestseller ? `<div class="badge">⭐ BEST SELLER</div>` : "";
         card.innerHTML = `
           ${badgeHtml}
-          <img class="product-img" src="${product.image}" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+          <img class="product-img" src="${product.image || DEFAULT_IMAGE}" onerror="this.src='${DEFAULT_IMAGE}'">
           <div class="product-info">
             <div class="product-title">${product.name}</div>
             <div class="product-price">${product.price}</div>
@@ -348,7 +366,7 @@
       products.forEach(prod => {
         const row = tbody.insertRow();
         row.innerHTML = `
-          <td><img class="product-img-preview" src="${prod.image || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'"></td>
+          <td><img class="product-img-preview" src="${prod.image || DEFAULT_IMAGE}" onerror="this.src='${DEFAULT_IMAGE}'"></td>
           <td><strong>${prod.name}</strong><br><small style="color:#888">${(prod.desc || '').substring(0,35)}</small></td>
           <td>${prod.price}</td>
           <td><a href="${prod.link}" target="_blank" style="color:#c5a87c; font-size:0.7rem;">${(prod.link || '').substring(0,35)}</a></td>
@@ -384,19 +402,50 @@
       });
     }
 
+    // Upload image handler
+    function setupImageUpload() {
+      const uploadArea = document.getElementById("uploadArea");
+      const fileInput = document.getElementById("imageFileInput");
+      const imagePreview = document.getElementById("imagePreview");
+      
+      uploadArea.onclick = () => fileInput.click();
+      fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            tempImageData = event.target.result;
+            imagePreview.src = tempImageData;
+            imagePreview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+    }
+
     function openEditModal(id) {
       const prod = products.find(p => p.id === id);
       if (prod) {
         document.getElementById("modalTitle").innerText = "Edit Produk";
         document.getElementById("productName").value = prod.name;
         document.getElementById("productPrice").value = prod.price;
-        document.getElementById("productImage").value = prod.image || "";
         document.getElementById("productLink").value = prod.link;
         document.getElementById("productDesc").value = prod.desc || "";
         document.getElementById("productSize").value = prod.size || "";
         document.getElementById("productColor").value = prod.color || "";
         document.getElementById("productBestseller").checked = prod.bestseller || false;
         document.getElementById("editProductId").value = prod.id;
+        document.getElementById("currentImageData").value = prod.image || "";
+        
+        // Preview gambar lama
+        const preview = document.getElementById("imagePreview");
+        if (prod.image && prod.image !== DEFAULT_IMAGE) {
+          preview.src = prod.image;
+          preview.style.display = "block";
+        } else {
+          preview.style.display = "none";
+        }
+        tempImageData = prod.image || "";
         document.getElementById("productModal").style.display = "flex";
       }
     }
@@ -405,13 +454,16 @@
       document.getElementById("modalTitle").innerText = "Tambah Produk Baru";
       document.getElementById("productName").value = "";
       document.getElementById("productPrice").value = "";
-      document.getElementById("productImage").value = "";
       document.getElementById("productLink").value = "";
       document.getElementById("productDesc").value = "";
       document.getElementById("productSize").value = "";
       document.getElementById("productColor").value = "";
       document.getElementById("productBestseller").checked = false;
       document.getElementById("editProductId").value = "";
+      document.getElementById("currentImageData").value = "";
+      document.getElementById("imagePreview").style.display = "none";
+      document.getElementById("imageFileInput").value = "";
+      tempImageData = "";
       document.getElementById("productModal").style.display = "flex";
     }
 
@@ -419,29 +471,35 @@
       const id = document.getElementById("editProductId").value;
       const name = document.getElementById("productName").value.trim();
       const price = document.getElementById("productPrice").value.trim();
-      const image = document.getElementById("productImage").value.trim();
       const link = document.getElementById("productLink").value.trim();
       const desc = document.getElementById("productDesc").value.trim();
       const size = document.getElementById("productSize").value.trim();
       const color = document.getElementById("productColor").value.trim();
       const bestseller = document.getElementById("productBestseller").checked;
+      const imageData = tempImageData || document.getElementById("currentImageData").value;
       
       if (!name || !price || !link) {
         alert("⚠️ Nama, Harga, dan Link Redirect wajib diisi!");
         return;
       }
       
+      if (!imageData) {
+        alert("⚠️ Harap upload gambar produk!");
+        return;
+      }
+      
       if (id) {
         const index = products.findIndex(p => p.id === id);
         if (index !== -1) {
-          products[index] = { ...products[index], name, price, image, link, desc, size, color, bestseller };
+          products[index] = { ...products[index], name, price, image: imageData, link, desc, size, color, bestseller };
         }
       } else {
         const newId = "prod_" + Date.now();
-        products.push({ id: newId, name, price, image, link, desc, size, color, bestseller, clicks: 0, orders: 0 });
+        products.push({ id: newId, name, price, image: imageData, link, desc, size, color, bestseller, clicks: 0, orders: 0 });
       }
       saveProducts();
       document.getElementById("productModal").style.display = "none";
+      tempImageData = "";
     }
 
     // ========== SWITCH MODE ==========
@@ -452,7 +510,6 @@
       document.getElementById("loginOverlay").style.display = "none";
       renderLandingProducts();
       renderTestimonials();
-      // Trigger fade animation
       setTimeout(() => {
         document.querySelectorAll('.fade-up').forEach(el => {
           if (el.getBoundingClientRect().top < window.innerHeight - 100) {
@@ -509,7 +566,6 @@
       showLandingMode();
     };
     
-    // Tutup login overlay klik di luar
     document.getElementById("loginOverlay").onclick = function(e) {
       if (e.target === document.getElementById("loginOverlay")) {
         document.getElementById("loginOverlay").style.display = "none";
@@ -528,7 +584,6 @@
       else alert("Belum ada produk nih!");
     };
     
-    // Mobile menu toggle
     document.getElementById("menuToggle").onclick = () => {
       document.getElementById("navLinks").classList.toggle("active");
     };
@@ -543,6 +598,9 @@
         document.getElementById("productModal").style.display = "none";
       }
     };
+    
+    // Setup upload
+    setupImageUpload();
     
     // Fade animation observer
     const observer = new IntersectionObserver((entries) => {
