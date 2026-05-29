@@ -12,12 +12,24 @@
     :root { --bg-cream: #FEF7F0; --pure-white: #FFFFFF; --charcoal: #2C2825; --gold-accent: #C5A87C; }
     .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s, transform 0.7s; }
     .fade-up.appear { opacity: 1; transform: translateY(0); }
-    .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: rgba(254,247,240,0.95); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.03); }
+    .navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 5%; background: rgba(254,247,240,0.95); backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.03);
+    }
     .logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; }
     .logo span { color: var(--gold-accent); }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
     .nav-links a { text-decoration: none; font-weight: 500; color: #3a3632; transition: 0.2s; }
     .nav-links a:hover { color: var(--gold-accent); }
+    .dashboard-link {
+      color: #c5a87c !important;
+      border: 1px solid #c5a87c;
+      padding: 6px 16px;
+      border-radius: 40px;
+      background: rgba(197,168,124,0.1);
+    }
+    .dashboard-link:hover { background: #c5a87c; color: white !important; }
     .menu-icon { display: none; font-size: 1.5rem; cursor: pointer; }
     .btn-primary { background: var(--charcoal); color: white; border: none; padding: 12px 32px; font-weight: 600; border-radius: 40px; cursor: pointer; transition: 0.25s; }
     .btn-primary:hover { background: #4a423e; transform: scale(1.02); }
@@ -44,6 +56,9 @@
     .order-btn:hover { background: var(--charcoal); color: white; }
     .testimonial-grid { display: flex; flex-wrap: wrap; gap: 1.8rem; justify-content: center; margin-top: 1.5rem; }
     .testi-card { background: white; border-radius: 28px; padding: 1.8rem; width: 300px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1px solid #f0e5df; }
+    .testi-card i { font-size: 1.8rem; color: #D4B9B0; margin-bottom: 0.8rem; }
+    .testi-text { font-style: italic; font-size: 0.9rem; color: #4f4944; margin: 0.8rem 0; }
+    .stars { color: #e4bc92; letter-spacing: 2px; }
     footer { background: #F4EDE6; padding: 2.5rem 5% 1.8rem; margin-top: 2rem; border-radius: 28px 28px 0 0; }
     .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem; align-items: center; }
     .socials a { color: #5e554d; margin-right: 20px; font-size: 1.3rem; transition: 0.2s; }
@@ -51,7 +66,7 @@
     .copyright { text-align: center; margin-top: 1.5rem; font-size: 0.75rem; color: #8b7b70; }
     .float-wa { position: fixed; bottom: 24px; right: 24px; background: #25D366; width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 14px rgba(0,0,0,0.15); z-index: 999; color: white; font-size: 26px; text-decoration: none; }
     @media (max-width: 900px) {
-      .nav-links { position: fixed; top: 68px; left: -100%; background: rgba(255,252,248,0.98); flex-direction: column; width: 65%; height: 100vh; padding: 2rem; gap: 1.8rem; transition: 0.3s; }
+      .nav-links { position: fixed; top: 68px; left: -100%; background: rgba(255,252,248,0.98); backdrop-filter: blur(20px); flex-direction: column; width: 65%; height: 100vh; padding: 2rem; gap: 1.8rem; transition: 0.3s; z-index: 999; }
       .nav-links.active { left: 0; }
       .menu-icon { display: block; }
       .hero-content h1 { font-size: 2.3rem; }
@@ -69,6 +84,7 @@
     <li><a href="#catalog">Katalog</a></li>
     <li><a href="#about">Tentang</a></li>
     <li><a href="#contact">Kontak</a></li>
+    <li><a href="dashboard.html" class="dashboard-link"><i class="fas fa-chart-line"></i> Dashboard</a></li>
   </ul>
 </nav>
 
@@ -88,30 +104,38 @@
   <div class="product-grid" id="productGrid"></div>
 </section>
 
+<section style="background: #FCF8F4; border-radius: 40px; margin: 0 5% 1.5rem; padding: 2.5rem 5%;">
+  <h2 class="section-title fade-up">Kata Mereka 💬</h2>
+  <div class="testimonial-grid" id="testimonialsGrid"></div>
+</section>
+
 <footer id="contact">
   <div class="footer-content">
     <div><div class="logo" style="font-size: 1.4rem;">russfinds<span>.</span></div><p style="margin-top: 8px; font-size: 0.8rem;">Thrift & premium fashion buat anak muda.</p></div>
-    <div class="socials"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-tiktok"></i></a></div>
+    <div class="socials"><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-tiktok"></i></a><a href="#"><i class="fab fa-twitter"></i></a></div>
   </div>
   <div class="copyright"><p>© 2025 russfinds — Gaskeun tampil kece</p></div>
 </footer>
 
-<a href="https://wa.me/6281234567890" class="float-wa" target="_blank"><i class="fab fa-whatsapp"></i></a>
+<a href="https://wa.me/6281234567890?text=Halo%20RussFinds!" class="float-wa" target="_blank"><i class="fab fa-whatsapp"></i></a>
 
 <script>
-  // Ambil data produk dari localStorage (yang diatur admin di dashboard)
   let products = [];
+  let testimonials = [
+    { name: "Rachel ✨", text: "Asli nyaman banget! Udah beli 2 kali, gak nyesel.", stars: 5 },
+    { name: "Dimas P.", text: "Keren sih ini mah. Potongannya pas, rekomen buat cowo juga.", stars: 5 },
+    { name: "Nadia A.", text: "Aesthetic vibes banget! Bahannya adem.", stars: 5 }
+  ];
 
   function loadProducts() {
     const stored = localStorage.getItem("russfinds_products");
     if (stored && JSON.parse(stored).length > 0) {
       products = JSON.parse(stored);
     } else {
-      // Default produk biar gak kosong
       products = [
-        { id: "prod1", name: "Wide Pants Satin", price: "Rp 189k", image: "https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg?auto=compress&cs=tinysrgb&w=600", link: "https://shop.russfinds.id/wide-satin", desc: "Mbah satin halus, flowy", size: "S/M/L/XL", color: "Cream, Pink", bestseller: true },
-        { id: "prod2", name: "Tailored Trousers", price: "Rp 225k", image: "https://images.pexels.com/photos/7679547/pexels-photo-7679547.jpeg?auto=compress&cs=tinysrgb&w=600", link: "https://shop.russfinds.id/tailored", desc: "Potongan rapi adem", size: "M/L/XL", color: "Beige, Hitam", bestseller: false },
-        { id: "prod3", name: "Pleated Linen", price: "Rp 199k", image: "https://images.pexels.com/photos/5981725/pexels-photo-5981725.jpeg?auto=compress&cs=tinysrgb&w=600", link: "https://shop.russfinds.id/pleated", desc: "Linen premium gak bikin gerah", size: "S/M/L", color: "Nude, Khaki", bestseller: true }
+        { id: "prod1", name: "Wide Pants Satin", price: "Rp 189k", image: "https://images.pexels.com/photos/7679720/pexels-photo-7679720.jpeg?auto=compress&cs=tinysrgb&w=600", link: "https://wa.me/6281234567890?text=Order%20Wide%20Pants%20Satin", desc: "Mbah satin halus, flowy", size: "S/M/L/XL", color: "Cream, Pink", bestseller: true },
+        { id: "prod2", name: "Tailored Trousers", price: "Rp 225k", image: "https://images.pexels.com/photos/7679547/pexels-photo-7679547.jpeg?auto=compress&cs=tinysrgb&w=600", link: "https://wa.me/6281234567890?text=Order%20Tailored%20Trousers", desc: "Potongan rapi adem", size: "M/L/XL", color: "Beige, Hitam", bestseller: false },
+        { id: "prod3", name: "Pleated Linen", price: "Rp 199k", image: "https://images.pexels.com/photos/5981725/pexels-photo-5981725.jpeg?auto=compress&cs=tinysrgb&w=600", link: "https://wa.me/6281234567890?text=Order%20Pleated%20Linen", desc: "Linen premium gak bikin gerah", size: "S/M/L", color: "Nude, Khaki", bestseller: true }
       ];
       localStorage.setItem("russfinds_products", JSON.stringify(products));
     }
@@ -128,12 +152,12 @@
     let stats = JSON.parse(localStorage.getItem("russfinds_stats") || '{"totalClicks":0,"totalOrders":0}');
     stats.totalClicks = (stats.totalClicks || 0) + 1;
     localStorage.setItem("russfinds_stats", JSON.stringify(stats));
-    
     window.location.href = productLink;
   }
 
   function renderProducts() {
     const grid = document.getElementById("productGrid");
+    if (!grid) return;
     grid.innerHTML = "";
     products.forEach(product => {
       const card = document.createElement("div");
@@ -161,31 +185,45 @@
     });
   }
 
-  // Hero button
+  function renderTestimonials() {
+    const container = document.getElementById("testimonialsGrid");
+    if (!container) return;
+    container.innerHTML = "";
+    testimonials.forEach(t => {
+      const starHtml = `<div class="stars">${'★'.repeat(t.stars)}${'☆'.repeat(5-t.stars)}</div>`;
+      const card = document.createElement("div");
+      card.className = "testi-card fade-up";
+      card.innerHTML = `<i class="fas fa-quote-left"></i><div class="testi-text">“${t.text}”</div>${starHtml}<div class="testi-name">— ${t.name}</div>`;
+      container.appendChild(card);
+    });
+  }
+
   document.getElementById("heroBuyBtn")?.addEventListener("click", () => {
     if (products.length > 0) trackClick(products[0].id, products[0].link);
     else alert("Belum ada produk nih!");
   });
 
-  // Mobile menu
   const menuToggle = document.getElementById("menuToggle");
   const navLinksEl = document.getElementById("navLinks");
   menuToggle?.addEventListener("click", () => navLinksEl.classList.toggle("active"));
   document.querySelectorAll('.nav-links a').forEach(link => {
     link.addEventListener('click', function(e) {
-      e.preventDefault();
-      const target = document.getElementById(this.getAttribute('href').substring(1));
-      if (target) { target.scrollIntoView({ behavior: 'smooth' }); navLinksEl.classList.remove('active'); }
+      if (this.getAttribute('href') === 'dashboard.html') return;
+      if (this.getAttribute('href').startsWith('#')) {
+        e.preventDefault();
+        const target = document.getElementById(this.getAttribute('href').substring(1));
+        if (target) { target.scrollIntoView({ behavior: 'smooth' }); navLinksEl.classList.remove('active'); }
+      }
     });
   });
 
-  // Animasi
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('appear'); observer.unobserve(e.target); } });
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
   loadProducts();
+  renderTestimonials();
 </script>
 </body>
 </html>
