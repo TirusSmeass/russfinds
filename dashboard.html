@@ -201,4 +201,111 @@
   function addOrder(productId) {
     const prod = products.find(p => p.id === productId);
     if (prod) {
-      prod.
+      prod.orders = (prod.orders || 0) + 1;
+      stats.totalOrders++;
+      saveProducts();
+      saveStats();
+      alert("✅ Pesanan +1 tercatat!");
+    }
+  }
+
+  function openEditModal(id) {
+    const prod = products.find(p => p.id === id);
+    if (prod) {
+      document.getElementById("modalTitle").innerText = "Edit Produk";
+      document.getElementById("productName").value = prod.name;
+      document.getElementById("productPrice").value = prod.price;
+      document.getElementById("productImage").value = prod.image || "";
+      document.getElementById("productLink").value = prod.link;
+      document.getElementById("productDesc").value = prod.desc || "";
+      document.getElementById("productSize").value = prod.size || "";
+      document.getElementById("productColor").value = prod.color || "";
+      document.getElementById("productBestseller").checked = prod.bestseller || false;
+      document.getElementById("editProductId").value = prod.id;
+      document.getElementById("productModal").style.display = "flex";
+    }
+  }
+
+  function openAddModal() {
+    document.getElementById("modalTitle").innerText = "Tambah Produk Baru";
+    document.getElementById("productName").value = "";
+    document.getElementById("productPrice").value = "";
+    document.getElementById("productImage").value = "";
+    document.getElementById("productLink").value = "";
+    document.getElementById("productDesc").value = "";
+    document.getElementById("productSize").value = "";
+    document.getElementById("productColor").value = "";
+    document.getElementById("productBestseller").checked = false;
+    document.getElementById("editProductId").value = "";
+    document.getElementById("productModal").style.display = "flex";
+  }
+
+  function saveProduct() {
+    const id = document.getElementById("editProductId").value;
+    const name = document.getElementById("productName").value.trim();
+    const price = document.getElementById("productPrice").value.trim();
+    const image = document.getElementById("productImage").value.trim();
+    const link = document.getElementById("productLink").value.trim();
+    const desc = document.getElementById("productDesc").value.trim();
+    const size = document.getElementById("productSize").value.trim();
+    const color = document.getElementById("productColor").value.trim();
+    const bestseller = document.getElementById("productBestseller").checked;
+
+    if (!name || !price || !link) {
+      alert("⚠️ Nama, Harga, dan Link Redirect wajib diisi!");
+      return;
+    }
+
+    if (id) {
+      const index = products.findIndex(p => p.id === id);
+      if (index !== -1) {
+        products[index] = { ...products[index], name, price, image, link, desc, size, color, bestseller };
+      }
+    } else {
+      const newId = "prod_" + Date.now();
+      products.push({ id: newId, name, price, image, link, desc, size, color, bestseller, clicks: 0, orders: 0 });
+    }
+    saveProducts();
+    document.getElementById("productModal").style.display = "none";
+  }
+
+  // ========== LOGIN SYSTEM ==========
+  function checkAuth() {
+    return localStorage.getItem("russfinds_admin_auth") === "true";
+  }
+
+  document.getElementById("loginBtn").onclick = () => {
+    const user = document.getElementById("loginUser").value;
+    const pass = document.getElementById("loginPass").value;
+    if (user === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+      localStorage.setItem("russfinds_admin_auth", "true");
+      document.getElementById("loginContainer").style.display = "none";
+      document.getElementById("dashboardMain").style.display = "block";
+      loadData();
+    } else {
+      document.getElementById("loginError").innerText = "Username atau password salah!";
+    }
+  };
+
+  document.getElementById("logoutBtn").onclick = () => {
+    localStorage.removeItem("russfinds_admin_auth");
+    document.getElementById("loginContainer").style.display = "flex";
+    document.getElementById("dashboardMain").style.display = "none";
+    document.getElementById("loginUser").value = "";
+    document.getElementById("loginPass").value = "";
+  };
+
+  if (checkAuth()) {
+    document.getElementById("loginContainer").style.display = "none";
+    document.getElementById("dashboardMain").style.display = "block";
+    loadData();
+  }
+
+  // Modal events
+  document.getElementById("openAddBtn").onclick = openAddModal;
+  document.getElementById("closeModalBtn").onclick = () => document.getElementById("productModal").style.display = "none";
+  document.getElementById("saveProductBtn").onclick = saveProduct;
+  window.onclick = (e) => { if (e.target === document.getElementById("productModal")) document.getElementById("productModal").style.display = "none"; };
+</script>
+</body>
+</html>
