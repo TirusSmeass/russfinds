@@ -341,6 +341,13 @@
           trackClick(id, link);
         });
       });
+      
+      // Trigger fade animation untuk card baru
+      document.querySelectorAll('.product-card.fade-up').forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight - 100) {
+          el.classList.add('appear');
+        }
+      });
     }
 
     function escapeHtml(str) {
@@ -419,19 +426,21 @@
       const fileInput = document.getElementById("imageFileInput");
       const imagePreview = document.getElementById("imagePreview");
       
-      uploadArea.onclick = () => fileInput.click();
-      fileInput.onchange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(event) {
-            tempImageData = event.target.result;
-            imagePreview.src = tempImageData;
-            imagePreview.style.display = "block";
-          };
-          reader.readAsDataURL(file);
-        }
-      };
+      if (uploadArea) {
+        uploadArea.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+              tempImageData = event.target.result;
+              imagePreview.src = tempImageData;
+              imagePreview.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+          }
+        };
+      }
     }
 
     function openEditModal(id) {
@@ -520,13 +529,6 @@
       document.getElementById("loginOverlay").style.display = "none";
       renderLandingProducts();
       renderTestimonials();
-      setTimeout(() => {
-        document.querySelectorAll('.fade-up').forEach(el => {
-          if (el.getBoundingClientRect().top < window.innerHeight - 100) {
-            el.classList.add('appear');
-          }
-        });
-      }, 100);
     }
 
     function showDashboardMode() {
@@ -554,62 +556,92 @@
       loadData();
       
       // Event Listeners
-      document.getElementById("openDashboardBtn").onclick = function(e) {
-        e.preventDefault();
-        openLogin();
-      };
+      const openDashboardBtn = document.getElementById("openDashboardBtn");
+      if (openDashboardBtn) {
+        openDashboardBtn.onclick = function(e) {
+          e.preventDefault();
+          openLogin();
+        };
+      }
       
-      document.getElementById("loginSubmitBtn").onclick = function() {
-        const user = document.getElementById("loginUser").value;
-        const pass = document.getElementById("loginPass").value;
-        if (user === ADMIN_USER && pass === ADMIN_PASS) {
-          localStorage.setItem("russfinds_admin_auth", "true");
-          showDashboardMode();
-        } else {
-          document.getElementById("loginErrorMsg").innerText = "Username atau password salah!";
-        }
-      };
+      const loginSubmitBtn = document.getElementById("loginSubmitBtn");
+      if (loginSubmitBtn) {
+        loginSubmitBtn.onclick = function() {
+          const user = document.getElementById("loginUser").value;
+          const pass = document.getElementById("loginPass").value;
+          if (user === ADMIN_USER && pass === ADMIN_PASS) {
+            localStorage.setItem("russfinds_admin_auth", "true");
+            showDashboardMode();
+          } else {
+            document.getElementById("loginErrorMsg").innerText = "Username atau password salah!";
+          }
+        };
+      }
       
-      document.getElementById("backToStoreBtn").onclick = function() {
-        localStorage.removeItem("russfinds_admin_auth");
-        showLandingMode();
-      };
+      const backToStoreBtn = document.getElementById("backToStoreBtn");
+      if (backToStoreBtn) {
+        backToStoreBtn.onclick = function() {
+          localStorage.removeItem("russfinds_admin_auth");
+          showLandingMode();
+        };
+      }
       
-      document.getElementById("logoutDashBtn").onclick = function() {
-        localStorage.removeItem("russfinds_admin_auth");
-        showLandingMode();
-      };
+      const logoutDashBtn = document.getElementById("logoutDashBtn");
+      if (logoutDashBtn) {
+        logoutDashBtn.onclick = function() {
+          localStorage.removeItem("russfinds_admin_auth");
+          showLandingMode();
+        };
+      }
       
-      document.getElementById("loginOverlay").onclick = function(e) {
-        if (e.target === document.getElementById("loginOverlay")) {
-          document.getElementById("loginOverlay").style.display = "none";
-        }
-      };
+      const loginOverlay = document.getElementById("loginOverlay");
+      if (loginOverlay) {
+        loginOverlay.onclick = function(e) {
+          if (e.target === loginOverlay) {
+            loginOverlay.style.display = "none";
+          }
+        };
+      }
       
       // Navigation Landing
-      document.getElementById("navHome").onclick = () => document.getElementById("homeSection").scrollIntoView({ behavior: 'smooth' });
-      document.getElementById("navCatalog").onclick = () => document.getElementById("catalogSection").scrollIntoView({ behavior: 'smooth' });
-      document.getElementById("navAbout").onclick = () => document.getElementById("contactSection").scrollIntoView({ behavior: 'smooth' });
-      document.getElementById("navContact").onclick = () => document.getElementById("contactSection").scrollIntoView({ behavior: 'smooth' });
-      document.getElementById("logoHome").onclick = () => document.getElementById("homeSection").scrollIntoView({ behavior: 'smooth' });
+      const navHome = document.getElementById("navHome");
+      if (navHome) navHome.onclick = () => document.getElementById("homeSection").scrollIntoView({ behavior: 'smooth' });
+      const navCatalog = document.getElementById("navCatalog");
+      if (navCatalog) navCatalog.onclick = () => document.getElementById("catalogSection").scrollIntoView({ behavior: 'smooth' });
+      const navAbout = document.getElementById("navAbout");
+      if (navAbout) navAbout.onclick = () => document.getElementById("contactSection").scrollIntoView({ behavior: 'smooth' });
+      const navContact = document.getElementById("navContact");
+      if (navContact) navContact.onclick = () => document.getElementById("contactSection").scrollIntoView({ behavior: 'smooth' });
+      const logoHome = document.getElementById("logoHome");
+      if (logoHome) logoHome.onclick = () => document.getElementById("homeSection").scrollIntoView({ behavior: 'smooth' });
       
-      document.getElementById("heroBuyBtn").onclick = () => {
-        if (products.length) trackClick(products[0].id, products[0].link);
-        else alert("Belum ada produk nih!");
-      };
+      const heroBuyBtn = document.getElementById("heroBuyBtn");
+      if (heroBuyBtn) {
+        heroBuyBtn.onclick = () => {
+          if (products.length) trackClick(products[0].id, products[0].link);
+          else alert("Belum ada produk nih!");
+        };
+      }
       
-      document.getElementById("menuToggle").onclick = () => {
-        document.getElementById("navLinks").classList.toggle("active");
-      };
+      const menuToggle = document.getElementById("menuToggle");
+      if (menuToggle) {
+        menuToggle.onclick = () => {
+          document.getElementById("navLinks").classList.toggle("active");
+        };
+      }
       
       // Modal events
-      document.getElementById("closeModalBtn").onclick = () => document.getElementById("productModal").style.display = "none";
-      document.getElementById("openAddProductDash").onclick = openAddModal;
-      document.getElementById("saveProductBtn").onclick = saveProductFromModal;
+      const closeModalBtn = document.getElementById("closeModalBtn");
+      if (closeModalBtn) closeModalBtn.onclick = () => document.getElementById("productModal").style.display = "none";
+      const openAddProductDash = document.getElementById("openAddProductDash");
+      if (openAddProductDash) openAddProductDash.onclick = openAddModal;
+      const saveProductBtn = document.getElementById("saveProductBtn");
+      if (saveProductBtn) saveProductBtn.onclick = saveProductFromModal;
       
       window.onclick = (e) => {
-        if (e.target === document.getElementById("productModal")) {
-          document.getElementById("productModal").style.display = "none";
+        const modal = document.getElementById("productModal");
+        if (e.target === modal) {
+          modal.style.display = "none";
         }
       };
       
@@ -625,6 +657,9 @@
       if (localStorage.getItem("russfinds_admin_auth") === "true") {
         showDashboardMode();
       } else {
+        // Pastikan render landing products setelah data load
+        renderLandingProducts();
+        renderTestimonials();
         showLandingMode();
       }
     }
